@@ -31,6 +31,7 @@ public class RpcRequestMessageHandler extends SimpleChannelInboundHandler<RpcReq
             Object service = ServiceProvider.getService(message.getInterfaceName());
             // 获取调用的方法
             Method method = service.getClass().getMethod(message.getMethodName(), message.getParameterTypes());
+
             // 调用方法得到返回值
             Object invoke = method.invoke(service, message.getParameterValue());
             // 将方法返回值放入RPC响应消息

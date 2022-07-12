@@ -12,6 +12,7 @@ import com.moon.netty.rpc.transport.server.handler.RpcRequestMessageHandler;
 import com.moon.netty.rpc.utils.PackageScanUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -20,6 +21,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.concurrent.Future;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -78,13 +80,22 @@ public class RpcServer {
                                      .addLast(RPC_REQUEST_HANDLER);
                                }
                            });
-            Channel channel = serverBootstrap.bind(new InetSocketAddress(this.host, this.port)).sync().channel();
+            ChannelFuture channelFuture = serverBootstrap.bind(new InetSocketAddress(this.host, this.port)).sync();
+            log.info("服务器{}:{}成功启动...", this.host, this.port);
+            Channel channel = channelFuture.channel();
             channel.closeFuture().sync();
         } catch (InterruptedException e) {
             log.error("启动服务器时有错误发生: ", e);
         } finally {
-            boss.shutdownGracefully();
-            work.shutdownGracefully();
+            Future<?> bossCloseFuture = boss.shutdownGracefully();
+            Future<?> workerCloseFuture = work.shutdownGracefully();
+            try {
+                bossCloseFuture.sync();
+                workerCloseFuture.sync();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            log.info("服务端优雅关闭");
         }
     }
 

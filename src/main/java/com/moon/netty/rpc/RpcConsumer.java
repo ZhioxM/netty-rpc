@@ -19,7 +19,7 @@ public class RpcConsumer {
         // 获取服务的代理对象
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
         // TODO : 上面那个远程代用出错之后，下面这个远程调用居然没有成功调用: 解决了，原因是因为Promise异步结果是调用出错时会抛出一个运行时异常，在RpcClientProxy的60行
-        OrderService orderService = rpcClientProxy.getProxy(OrderService.class);
+        //OrderService orderService = rpcClientProxy.getProxy(OrderService.class);
         // 通过代理对象发起RPC请求
         System.out.println(helloService.sayHello("zhangsan"));
         // try {
@@ -27,7 +27,7 @@ public class RpcConsumer {
         // } catch (Exception e) {
         //     System.out.println(1);
         // }
-        System.out.println("张三下单成功，订单号是" + orderService.sumbit("张三"));
+        //System.out.println("张三下单成功，订单号是" + orderService.sumbit("张三"));
         // HelloService helloService = RpcClientProxy.getProxy(HelloService.class);
         // String msg = helloService.sayHello("张三");
         // System.out.println(msg);

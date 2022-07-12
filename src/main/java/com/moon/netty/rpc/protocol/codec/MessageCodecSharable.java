@@ -64,6 +64,7 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
         Message message = algorithm.deserialize(messageClass, bytes);
 //        log.debug("{}, {}, {}, {}, {}, {}", magicNum, version, serializerType, messageType, sequenceId, length);
 //        log.debug("{}", message);
+//        in.release(); // 可以释放了吧？，因为他都被转化成Message对象了 --> 根据Netty In Action p127，不需要我们显示的释放，编解码器在解码或者编码后会自动帮我们释放一次
         out.add(message);
     }
 

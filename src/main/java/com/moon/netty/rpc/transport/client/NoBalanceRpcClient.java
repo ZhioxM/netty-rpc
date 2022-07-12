@@ -111,6 +111,7 @@ public class NoBalanceRpcClient {
             int sequenceId = SequenceIdGenerator.nextId();
             RpcRequestMessage msg = new RpcRequestMessage(
                     sequenceId,
+                    1000,
                     serviceClass.getName(),
                     method.getName(),
                     method.getReturnType(),

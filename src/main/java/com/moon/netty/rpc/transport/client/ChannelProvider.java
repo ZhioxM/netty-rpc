@@ -141,7 +141,7 @@ public class ChannelProvider {
                          ch.pipeline().addLast(MESSAGE_CODEC);
                          ch.pipeline().addLast(LOGGING_HANDLER);
                          // 发送心跳包的处理器，维持与与服务端的连接
-                         // ch.pipeline().addLast(HEARTBEAT_CLIENT);
+                          ch.pipeline().addLast(HEARTBEAT_CLIENT);
                          ch.pipeline().addLast(RPC_HANDLER);
                      }
                  });

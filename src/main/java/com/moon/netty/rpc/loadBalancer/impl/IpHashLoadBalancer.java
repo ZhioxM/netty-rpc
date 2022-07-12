@@ -5,6 +5,9 @@ import com.moon.netty.rpc.loadBalancer.LoadBalancer;
 
 import java.util.*;
 
+/**
+ * @author mzx
+ */
 public class IpHashLoadBalancer implements LoadBalancer {
     @Override
     public Instance getInstance(List<Instance> list) {

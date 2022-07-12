@@ -43,6 +43,7 @@ public class DeprecatedRpcClient {
             // 连接建立后发送一个RPC调用请求
             ChannelFuture future = channel.writeAndFlush(new RpcRequestMessage(
                     1,
+                    1000,
                     "com.moon.netty.rpc.transport.server.service.HelloService",
                     "sayHello",
                     String.class,

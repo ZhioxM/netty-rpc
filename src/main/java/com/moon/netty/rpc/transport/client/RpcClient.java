@@ -1,10 +1,12 @@
 package com.moon.netty.rpc.transport.client;
 
 import com.alibaba.nacos.api.exception.NacosException;
+import com.moon.netty.rpc.loadBalancer.LoadBalancer;
 import com.moon.netty.rpc.loadBalancer.impl.RoundRobinRule;
 import com.moon.netty.rpc.message.RpcRequestMessage;
 import com.moon.netty.rpc.registery.ServiceDiscovery;
 import com.moon.netty.rpc.registery.impl.NacosServiceDiscovery;
+import com.moon.netty.rpc.schedule.TimeoutCheckJob;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.util.concurrent.Promise;
@@ -13,18 +15,31 @@ import lombok.extern.slf4j.Slf4j;
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class RpcClient {
-    public static final Map<Integer, Promise<Object>> UNPROCESSED_RPC_REQUEST_PROMISES; // 用来异步处理RPC请求响应的Promise集合， 单例的
-    private final ServiceDiscovery serviceDiscovery; // 服务发现表
+    /**
+     * 服务发现表
+     */
+    private final ServiceDiscovery serviceDiscovery;
 
-    static {
-        UNPROCESSED_RPC_REQUEST_PROMISES = new ConcurrentHashMap<>();
+    /**
+     * 使用无参构造，则默认使用轮询的方式进行服务发现
+     */
+    public RpcClient() {
+        // 开启开启定时任务，去监测超时
+        Executors.newScheduledThreadPool(1)
+                .scheduleAtFixedRate(new TimeoutCheckJob(),0, 5, TimeUnit.SECONDS);
+        this.serviceDiscovery = new NacosServiceDiscovery(new RoundRobinRule());
     }
 
-    public RpcClient() {
-        this.serviceDiscovery = new NacosServiceDiscovery(new RoundRobinRule());
+    /**
+     * @param loadBalancer 负载均衡策略
+     */
+    public RpcClient(LoadBalancer loadBalancer) {
+        this.serviceDiscovery = new NacosServiceDiscovery(loadBalancer);
     }
 
     /**
